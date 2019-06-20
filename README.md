@@ -10,12 +10,11 @@ This branch is dedicated to the development of computer vision algorithms.
 # Setup 
 ## Getting started on lxplus
 ```bash
-git clone https://github.com/qbuat/tauperf.git
+git clone https://github.com/mociduki/tauperf.git
 cd tauperf
-git checkout -b imaging origin/imaging
+git checkout -b el_image origin/el_image
 source setup_lxplus.sh
 ```
-NB: training seems to be broken on lxplus, still trying to figure out why...
 
 ## Getting started on techlab-gpu-nvidiak20-03
 ```bash
