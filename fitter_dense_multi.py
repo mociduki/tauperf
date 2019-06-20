@@ -36,8 +36,13 @@ if args.debug:
 #data_dir = os.path.join(os.getenv('DATA_AREA'), 'v13/test_uniform_size')
 # data_dir = os.path.join(os.getenv('DATA_AREA'), 'v13/test_int')
 #data_dir = os.path.join(os.getenv('DATA_AREA'), 'v13/test_float_s1_128')
-data_dir = os.path.join(os.getenv('DATA_AREA'), 'v14/test_aod_1')
-                        
+#data_dir = os.path.join(os.getenv('DATA_AREA'), 'v14/test_aod_1')
+#data_dir = os.path.join(os.getenv('DATA_AREA'), '/data/mociduki/tau_tmp')
+#data_dir = os.path.join(os.getenv('DATA_AREA'), '/afs/cern.ch/work/m/mociduki/public/tau_images')
+sample_path= os.getenv('PWD')+"/el_images"
+data_dir = os.path.join(os.getenv('DATA_AREA'), sample_path)
+
+do_3p=False
 if args.one_prong_only:
     filenames = [
         os.path.join(data_dir, "images_new_1p0n.h5"),
@@ -47,6 +52,7 @@ if args.one_prong_only:
     labels = ['1p0n', '1p1n', '1pXn']
     n_classes = 3
 else: 
+    do_3p=True
     filenames = [
         os.path.join(data_dir, "images_new_1p0n.h5"),
         os.path.join(data_dir, "images_new_1p1n.h5"),
