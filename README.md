@@ -8,14 +8,15 @@ This branch is dedicated to the development of computer vision algorithms.
 3. [Usage](#usage)
 
 # Setup 
-## Getting started on lxplus
+## Getting started
 ```bash
 git clone https://github.com/mociduki/tauperf.git
 cd tauperf
 git checkout -b el_image origin/el_image
-source setup_lxplus.sh
+source setup_lxplus.sh #for lxplus
+source setup_lps.sh #for lps local servers
 ```
-
+<!---
 ## Getting started on techlab-gpu-nvidiak20-03
 ```bash
 cd /tmp/${USER}
@@ -24,7 +25,9 @@ cd tauperf
 git checkout -b imaging origin/imaging
 source setup_cern_gpu.sh
 ```
+-->
 
+<!---
 ## Install using a virtual environment
 
 ### virtual environment
@@ -35,6 +38,7 @@ source imaging_ve/bin/activate
 ### root setup
 you need a working setup of ROOT 6.
 
+-->
 ### dependencies
 note that some of these packages evolve very quickly so the version used can be quite deprecated
 ```bash
