@@ -1,4 +1,3 @@
-# Table of Content
 1. [Introduction](#introduction)
 2. [Setup](#setup)
 3. [Workflow](#workflow)
