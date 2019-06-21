@@ -45,9 +45,9 @@ data_dir = os.path.join(os.getenv('DATA_AREA'), sample_path)
 do_3p=False
 if args.one_prong_only:
     filenames = [
-        os.path.join(data_dir, "images_new_1p0n.h5"),
-        os.path.join(data_dir, "images_new_1p1n.h5"),
-        os.path.join(data_dir, "images_new_1p2n.h5"),
+        os.path.join(data_dir, "electron_images_type0.h5"),
+        os.path.join(data_dir, "electron_images_type1.h5"),
+        os.path.join(data_dir, "electron_images_type2.h5"),
         ]
     labels = ['1p0n', '1p1n', '1pXn']
     n_classes = 3

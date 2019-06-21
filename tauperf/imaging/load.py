@@ -35,7 +35,7 @@ def prepare_samples(filenames, labels):
     log.info('Number of tables for each sample: {}'.format(n_tables))
     # take 20% of the sample for validation and testing
     train_ind, test_ind = model_selection.train_test_split(
-        range(3, n_tables[0]), test_size=0.05, random_state=42)
+        range(3, n_tables[0]), test_size=0.1, random_state=42)
     val_ind, test_ind = np.split(test_ind, [len(test_ind) / 2])
 
     
