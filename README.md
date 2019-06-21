@@ -5,7 +5,7 @@ This branch is dedicated to the development of computer vision algorithms.
 # Table of Content
 1. [Introduction](#introduction)
 2. [Setup](#setup)
-3. [Usage](#usage)
+3. [Workflow](#workflow)
 
 # Setup 
 ## Getting started
@@ -16,6 +16,7 @@ git checkout -b el_image origin/el_image
 source setup_lxplus.sh #for lxplus
 source setup_lps.sh #for lps local servers
 ```
+
 <!---
 ## Getting started on techlab-gpu-nvidiak20-03
 ```bash
@@ -65,7 +66,6 @@ git checkout -b imaging origin/imaging
 1. Copy the [setup](setup_quentin.sh) file
 1. Edit the ROOT setup
 1. Edit the variables `DATA_AREA` and `VE_PATH` 
-
 -->
 
 ## Data (as of Jun. 20th, 2019)
@@ -79,8 +79,41 @@ On lps:
 ```
 /lcg/storage17/atlas/mociduki/el_images
 ```
+Prepare the symbolic links in your working directory
+```
+mkdir el_images; cd el_images
+ln -s /afs/cern.ch/work/m/mociduki/public/el_images #lxplus
+ln -s /lcg/storage17/atlas/mociduki/el_images #lps
+
+ln -s el_images/stat_10k/* .
+cd ..
+```
 
 <!--
 ## Processing/training/testing
 see the [workflow](doc/workflow.md)
 -->
+
+
+### Workflow
+Each time you login, you need to source the setup script you sourced for the first time (see above at setup).
+
+To execute training
+```
+python fitter_dense_multi.py --one-prong-only --overwrite
+```
+
+Note: the first line of the output must be
+```
+Using Theano backend.
+```
+If you see that the TensorFlow backend is used instead, you should check your keras config file. Mine looks like below:
+```
+> cat $HOME/.keras/keras.json
+{
+    "epsilon": 1e-07, 
+    "floatx": "float32", ython fitter_dense_multi.py --one-prong-only --overwrite
+    "image_data_format": "channels_last", _multi.py --one-prong-only --overwrite 
+    "backend": "theano"
+}
+```
