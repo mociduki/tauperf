@@ -1,11 +1,9 @@
-# Introduction
-Package to study ATLAS performances for tau leptons. 
-This branch is dedicated to the development of computer vision algorithms.
-
-# Table of Content
 1. [Introduction](#introduction)
 2. [Setup](#setup)
 3. [Workflow](#workflow)
+
+# Introduction
+Package to study ATLAS performances electron identification. This package was originally developed for tau leptons (see the origin of the fork for the details). This branch is dedicated to the development of computer vision algorithms.
 
 # Setup 
 ## Getting started
@@ -69,6 +67,11 @@ git checkout -b imaging origin/imaging
 -->
 
 ## Data (as of Jun. 20th, 2019)
+### h5 file extracted from DAOD file by the Copenhagen group
+Avaiable only on lxplus
+```
+/eos/user/l/lehrke/Data/Data/2019-05-02/MC_abseta_0.0_1.3_et_0.0_1000000.0_processes_pid.h5
+```
 
 ### hdf5 files containing the formated images
 On lxplus:
@@ -95,10 +98,10 @@ see the [workflow](doc/workflow.md)
 -->
 
 
-### Workflow
+# Workflow
 Each time you login, you need to source the setup script you sourced for the first time (see above at setup).
 
-To execute training
+### Execute training
 ```
 python fitter_dense_multi.py --one-prong-only --overwrite
 ```
@@ -117,3 +120,15 @@ If you see that the TensorFlow backend is used instead, you should check your ke
     "backend": "theano"
 }
 ```
+### Check results of training
+To see the results, look at the plots generated under
+```
+ls plots/imaging
+```
+
+### Conversion of the h5 file to training-compatible format
+```
+python transform_el_images.py 0
+```
+The argument above corresponds to the label number [0,1,2].
+To change the input file, look up 'input_filename' directly written in the code.
