@@ -101,7 +101,7 @@ see the [workflow](doc/workflow.md)
 # Workflow
 Each time you login, you need to source the setup script you sourced for the first time (see above at setup).
 
-To execute training
+### Execute training
 ```
 python fitter_dense_multi.py --one-prong-only --overwrite
 ```
@@ -120,8 +120,13 @@ If you see that the TensorFlow backend is used instead, you should check your ke
     "backend": "theano"
 }
 ```
+### Check results of training
+To see the results, look at the plots generated under
+```
+ls plots/imaging
+```
 
-# Conversion of the h5 file to training-compatible format
+### Conversion of the h5 file to training-compatible format
 ```
 python transform_el_images.py 0
 ```
