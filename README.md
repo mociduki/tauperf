@@ -38,7 +38,6 @@ source imaging_ve/bin/activate
 ### root setup
 you need a working setup of ROOT 6.
 
--->
 ### dependencies
 note that some of these packages evolve very quickly so the version used can be quite deprecated
 ```bash
@@ -67,26 +66,21 @@ git checkout -b imaging origin/imaging
 1. Edit the ROOT setup
 1. Edit the variables `DATA_AREA` and `VE_PATH` 
 
-## Data (as of Apr. 18th, 2018)
-### Flat root ntuples:
-```
-user.qbuat.mc16_13TeV.425200.Pythia8EvtGen_A14NNPDF23LO_Gammatautau_MassWeight.recon.ESD.e5468_s3170_r9466.tauid.v2_OUT
-```
+-->
 
-### root and hdf5 files with selected tau candidates:
-```
-/eos/atlas/user/q/qbuat/IMAGING/v13/test/output.selected.root
-/eos/atlas/user/q/qbuat/IMAGING/v13/test/output.selected.h5
-```
+## Data (as of Jun. 20th, 2019)
 
 ### hdf5 files containing the formated images
+On lxplus:
 ```
-/eos/atlas/user/q/qbuat/IMAGING/v13/test/images_new_1p0n.h5
-/eos/atlas/user/q/qbuat/IMAGING/v13/test/images_new_1p1n.h5
-/eos/atlas/user/q/qbuat/IMAGING/v13/test/images_new_1p2n.h5
-/eos/atlas/user/q/qbuat/IMAGING/v13/test/images_new_3p0n.h5
-/eos/atlas/user/q/qbuat/IMAGING/v13/test/images_new_3p1n.h5
+/afs/cern.ch/work/user/m/mociduki/el_images
+```
+On lps:
+```
+/lcg/storage17/atlas/mociduki/el_images
 ```
 
+<!--
 ## Processing/training/testing
 see the [workflow](doc/workflow.md)
+-->
