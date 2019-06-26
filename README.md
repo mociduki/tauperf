@@ -66,11 +66,11 @@ git checkout -b imaging origin/imaging
 1. Edit the variables `DATA_AREA` and `VE_PATH` 
 -->
 
-## Data (as of Jun. 20th, 2019)
+## Data (as of Jun. 26th, 2019)
 ### h5 file extracted from DAOD file by the Copenhagen group
 Avaiable only on lxplus
 ```
-/eos/user/l/lehrke/Data/Data/2019-05-02/MC_abseta_0.0_1.3_et_0.0_1000000.0_processes_pid.h5
+/eos/user/l/lehrke/Data/Data/2019-06-20/
 ```
 
 ### hdf5 files containing the formated images
@@ -83,7 +83,7 @@ On lps:
 /lcg/storage17/atlas/mociduki/el_images
 ```
 Prepare the symbolic links in your working directory
-```
+```bash
 mkdir el_images; cd el_images
 ln -s /afs/cern.ch/work/m/mociduki/public/el_images #lxplus
 ln -s /lcg/storage17/atlas/mociduki/el_images #lps
@@ -102,7 +102,7 @@ see the [workflow](doc/workflow.md)
 Each time you login, you need to source the setup script you sourced for the first time (see above at setup).
 
 ### Execute training
-```
+```bash
 python fitter_dense_multi.py --one-prong-only --overwrite
 ```
 
@@ -136,7 +136,7 @@ python plot_heatmap_el.py 0 0
 ```
 
 ### Conversion of the h5 file to training-compatible format
-```
+```bash
 python transform_el_images.py 0
 ```
 The argument above corresponds to the label number [0,1,2].
