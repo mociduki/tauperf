@@ -126,14 +126,15 @@ To see the results, look at the plots generated under
 ls plots/imaging
 ```
 ### To visualize images fed in the training
-To create the human readable images of energy deposits in the calorimeter layers, execute the following command, where first and second arguments corresponds to the event-index, and layer index in the calorimeters, respectively. 
-```
+To create the human readable images of energy deposits in the calorimeter layers, execute the following command, where the first and second arguments correspond to the event index, and layer index in the calorimeters, respectively. 
+```bash
 python plot_heatmap_el.py 0 0
-# 2nd argument above crresponds to below
-# 0: Presampler of EM
-# 1-3: Layer in the EM calo
-# 4-6: Layer in the Hadron calo
 ```
+2nd argument above crresponds to below  
+0: Presampler of EM  
+1-3: Layer in the EM calo  
+4-6: Layer in the Hadron calo  
+Note that it works only on lxplus because it takes the original h5 file as its input (the file is designated inside the python script).
 
 ### Conversion of the h5 file to training-compatible format
 ```bash
