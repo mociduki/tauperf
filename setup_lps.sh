@@ -1,10 +1,10 @@
 #!/bin/bash
 
 
-echo "specific to lxplus"
+echo "Specific to Montreal LPS servers"
 setupATLAS --quiet
 echo "setting up: root 6.04.10-x86_64-slc6-gcc48-opt"
-lsetup "root 6.04.10-x86_64-slc6-gcc48-opt"
+lsetup "root 6.04.10-x86_64-slc6-gcc48-opt" --quiet
 
 export DATA_AREA=/eos/atlas/user/q/qbuat/IMAGING
 export VE_PATH=/home/zp/mociduki/tau_imaging/imaging_ve/
@@ -15,7 +15,6 @@ source ${VE_PATH}/bin/activate
 
 
 SOURCE_TAUPERF_SETUP="${BASH_SOURCE[0]:-$0}"
-echo "SOURCE_TAUPERF_SETUP= "$SOURCE_TAUPERF_SETUP
 DIR_TAUPERF_SETUP="$( dirname "$SOURCE_TAUPERF_SETUP" )"
 while [ -h "$SOURCE_TAUPERF_SETUP" ]
 do 
