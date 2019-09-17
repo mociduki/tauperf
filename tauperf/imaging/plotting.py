@@ -193,13 +193,15 @@ def plot_heatmap(image, rec, pos_central_cell, irec, cal_layer, suffix, fixed_sc
 def divide_0(a, b):
     return np.divide(a, b, out=np.zeros_like(a), where=b!=0)
 
-do_3p=False
+nClass=2
 def plot_roc(y_test, y_pred, y_pant):
     from sklearn.metrics import roc_curve
 
     y_test_1p = y_test[np.logical_or(y_test == 0, y_test == 1, y_test == 2)]
     y_pred_1p = y_pred[np.logical_or(y_test == 0, y_test == 1, y_test == 2)]
-    y_pred_1p = divide_0(y_pred_1p[:,0], y_pred_1p[:,0] + y_pred_1p[:,1] + y_pred_1p[:,2])
+    denom=y_pred_1p[:,0] + y_pred_1p[:,1]
+    if nClass>=3: denom=y_pred_1p[:,0] + y_pred_1p[:,1] + y_pred_1p[:,2]
+    y_pred_1p = divide_0(y_pred_1p[:,0], denom)
     fpr_1p0n, tpr_1p0n, _ = roc_curve(y_test_1p, y_pred_1p, pos_label=0)
 
     y_pant_1p0n = y_pant[y_test == 0]
@@ -209,15 +211,17 @@ def plot_roc(y_test, y_pred, y_pant):
     
     y_test_1pXn = y_test[np.logical_or(y_test == 1, y_test == 2)]
     y_pred_1pXn = y_pred[np.logical_or(y_test == 1, y_test == 2)]
-    y_pred_1pXn = divide_0(y_pred_1pXn[:,1], (y_pred_1pXn[:,1] + y_pred_1pXn[:,2]))
+    denom=y_pred_1pXn[:,0] + y_pred_1pXn[:,1]
+    if nClass>=3: denom=y_pred_1pXn[:,1] + y_pred_1pXn[:,2]
+    y_pred_1pXn = divide_0(y_pred_1pXn[:,1], denom)
     fpr_1p1n, tpr_1p1n, _ = roc_curve(y_test_1pXn, y_pred_1pXn, pos_label=1)
 
     y_pant_1p1n = y_pant[y_test == 1]
     y_pant_1p2n = y_pant[y_test == 2]
     eff_pant_1p1n = float(len(y_pant_1p1n[y_pant_1p1n == 1])) / float(len(y_pant_1p1n))
-    rej_pant_1p1n = float(len(y_pant_1p2n[y_pant_1p2n != 1])) / float(len(y_pant_1p2n))
+    rej_pant_1p1n = 0 #float(len(y_pant_1p2n[y_pant_1p2n != 1])) / float(len(y_pant_1p2n))
 
-    if do_3p: 
+    if nClass==5: 
         y_test_3p = y_test[np.logical_or(y_test == 3, y_test == 4)]
         y_pred_3p = y_pred[np.logical_or(y_test == 3, y_test == 4)]
         y_pant_3p = y_pant[np.logical_or(y_test == 3, y_test == 4)]
@@ -234,7 +238,7 @@ def plot_roc(y_test, y_pred, y_pant):
     plt.figure()
     plt.plot(tpr_1p0n, 1 - fpr_1p0n, label='sig vs fake+bkg', color='red')
     plt.plot(tpr_1p1n, 1 - fpr_1p1n, label='fake vs sig+bkg', color='blue')
-    if do_3p: 
+    if nClass==5: 
         plt.plot(tpr_3p0n, 1 - fpr_3p0n, label='3p0n vs 3pXn', color='purple')
         pass
     plt.xlabel('Signal Efficiency')
@@ -249,7 +253,7 @@ def plot_roc(y_test, y_pred, y_pant):
         marker='v',
         c=['red', 'blue'],
         label='LLH-tight')
-    if do_3p: 
+    if nClass==5: 
         plt.scatter(
             [eff_pant_1p0n, eff_pant_1p1n, eff_pant_3p0n],
             [rej_pant_1p0n, rej_pant_1p1n, rej_pant_3p0n],
@@ -269,19 +273,27 @@ def plot_roc(y_test, y_pred, y_pant):
 
 def plot_scores(y_pred, y_true):
     
-    nCateg = int(3)
-    if do_3p: nCateg = 5
+    nCateg = int(2)
+    if   nClass==3: nCateg = 3
+    elif nClass==5: nCateg = 5
     for i in xrange(nCateg):
         y = y_pred[:,i]
         fig = plt.figure()
         plt.hist([
                 y[y_true == 0], 
+                y[y_true == 1] ],
+                 #label=['1p0n', '1p1n', '1p2n'],
+                 label=['signal', 'others'],
+                 bins=20, range=(0, 1), stacked=True, log=True)
+        if nClass==3:
+            plt.hist([
+                y[y_true == 0], 
                 y[y_true == 1], 
                 y[y_true == 2]],
-                 #label=['1p0n', '1p1n', '1p2n'],
-                 label=['signal', 'non-prompt', 'others'],
-                 bins=20, range=(0, 1), stacked=True, log=True)
-        if do_3p:
+                     #label=['1p0n', '1p1n', '1p2n'],
+                     label=['signal', 'non-prompt', 'others'],
+                    bins=20, range=(0, 1), stacked=True, log=True)
+        elif nClass==5:
             plt.hist([
                 y[y_true == 0], 
                 y[y_true == 1], 
