@@ -21,7 +21,7 @@ parser.add_argument(
 parser.add_argument(
     '--training-chunks', default=3, type=int)
 parser.add_argument(
-    '--one-prong-only', default=False, action='store_true')
+    '--nClasses', default=3, type=int)#, action='store_true')
 parser.add_argument(
     '--dev', default=False, action='store_true')
 
@@ -43,7 +43,14 @@ sample_path= os.getenv('PWD')+"/el_images"
 data_dir = os.path.join(os.getenv('DATA_AREA'), sample_path)
 
 do_3p=False
-if args.one_prong_only:
+if args.nClasses==2:
+    filenames = [
+        os.path.join(data_dir, "electron_images_type0.h5"),
+        os.path.join(data_dir, "electron_images_type1.h5"),
+        ]
+    labels = ['1p0n', '1pXn']
+    n_classes = 2
+elif args.nClasses==3:
     filenames = [
         os.path.join(data_dir, "electron_images_type0.h5"),
         os.path.join(data_dir, "electron_images_type1.h5"),
