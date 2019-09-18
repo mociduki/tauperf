@@ -41,26 +41,34 @@ class Image(tables.IsDescription):
 #     s4 = tables.Float64Col(shape=(16, 16), dflt=0.0)
 #     s5 = tables.Float64Col(shape=(16, 16), dflt=0.0)
 
+    #N-th layer of the EM-calorimeter cells
     s1 = tables.Float32Col(shape=(11, 56), dflt=0.0)
     s2 = tables.Float32Col(shape=(11, 56), dflt=0.0)
     s3 = tables.Float32Col(shape=(11, 56), dflt=0.0)
+    #N-th layer of the Tile-calorimeter cells
     s4 = tables.Float32Col(shape=(11,  7), dflt=0.0)
     s5 = tables.Float32Col(shape=(11,  7), dflt=0.0)
 
     tracks = tables.Float64Col(shape=(15, 4))
 
-    e = tables.Float64Col()
-    pt = tables.Float64Col()
+    # kinematic info of the electron
+    e = tables.Float64Col()  
+    pt = tables.Float64Col() 
     eta = tables.Float64Col()
     phi = tables.Float64Col()
-    mu = tables.Float64Col()
-    pantau = tables.Float64Col()
-    truthmode = tables.Float64Col()
-    true_pt = tables.Float64Col()
+    mu = tables.Float64Col() # pile up = average number of interactions per bunch crossing
+    # output of the existing algorithm
+    pantau = tables.Float64Col() 
+    llh_tight = tables.Float64Col()
+    llh_medium = tables.Float64Col()
+    llh_loose = tables.Float64Col()
+    truthmode = tables.Float64Col() # true label of the categories
+    # kinematic information of true electron
+    true_pt = tables.Float64Col()   
     true_eta = tables.Float64Col()
     true_phi = tables.Float64Col()
     true_m = tables.Float64Col()
-    alpha_e = tables.Float64Col()
+    alpha_e = tables.Float64Col() # not used for the moment
     pass
 
 def tau_tracks_simple(rec, event_idx, el_4v):
@@ -129,7 +137,7 @@ def tau_tracks_simple(rec, event_idx, el_4v):
 
     return tracks
 
-input_filename="/eos/user/l/lehrke/Data/Data/2019-05-02/MC_abseta_0.0_1.3_et_0.0_1000000.0_processes_pid.h5"
+input_filename="inputs/2019-06-20/MC_abseta_0.0_1.3_et_0.0_500.0_processes_pid_01.h5"
 print "input filename=",input_filename
 
 irec = int(sys.argv[1])
@@ -147,7 +155,7 @@ tmpMcChannels = list()
 
 nEvents=len(dset["mcChannelNumber"])
 #nCollect=43940 # 43945 this is the limit of type-1
-nCollect=40000 # 43945 this is the limit of type-1
+nCollect=10000 # 43945 this is the limit of type-1
 nCollected=0 #this is just a counter
 
 # nEvents=100
@@ -159,7 +167,8 @@ print "Looing over",nEvents,"events. Collecting", nCollect,"events of type",targ
 ZeeCount=0
 #event_idx=0
 
-out_dir = "/eos/user/m/mociduki/el_images/"
+#out_dir = "/eos/user/m/mociduki/el_images/"
+out_dir = "/afs/cern.ch/work/m/mociduki/el_images_tmp1/"
 #out_dir = "./"
 out_name=out_dir+"electron_images_type%d.h5" % targetType
 out_h5 = tables.open_file(out_name, mode='w')
@@ -179,14 +188,41 @@ for event_idx in range(nEvents):# dset["mcChannelNumber"]:
         pass
 
     ### Read Variables ===============================================
-    m_ee       = dset["m_ee"][event_idx]
+    m_ee       = dset["ll_m"][event_idx]
     truthOrigin= dset["p_TruthOrigin"][event_idx]
     truthTypeRaw  = dset["p_TruthType"][event_idx]
+    truthIFF      = dset["p_iffTruth"][event_idx]
     mcChannel  = dset["mcChannelNumber"][event_idx]
 
-    truthTypeMod=2                        #else than below
-    if    truthTypeRaw==2: truthTypeMod=0 #signal
-    elif  truthTypeRaw==4: truthTypeMod=1 #bkg electrons
+    # ### This is the real code ###
+    # truthTypeMod=2                        #else than below
+    # if    truthTypeRaw==2: truthTypeMod=0 #signal
+    # elif  truthTypeRaw==4: truthTypeMod=1 #bkg electrons
+
+    # ### This is the test code, temporarily labels flipped ###
+    # truthTypeMod=1                        #else than below
+    # if    truthTypeRaw==2: truthTypeMod=0 #signal
+    # elif  truthTypeRaw==4: truthTypeMod=2 #bkg electrons
+
+    # ### This is the test code, temporarily labels are merged ###
+    # truthTypeMod=1                        #else than below
+    # if    truthTypeRaw==2: truthTypeMod=0 #signal
+    # elif  truthTypeRaw==4: truthTypeMod=0 #bkg electrons
+
+    # IFF definition : Our category
+    truthTypeMod=5                    #else than below
+    if   truthIFF== 0: truthTypeMod=5 # Unknown                
+    elif truthIFF== 1: truthTypeMod=2 # KnownUnknown           
+    elif truthIFF== 2: truthTypeMod=0 # IsoElectron            
+    elif truthIFF== 3: truthTypeMod=1 # ChargeFlipIsoElectron  
+    elif truthIFF== 4: truthTypeMod=5 # PromptMuon             
+    elif truthIFF== 5: truthTypeMod=5 # PromptPhotonConversion 
+    elif truthIFF== 6: truthTypeMod=5 # ElectronFromMuon       
+    elif truthIFF== 7: truthTypeMod=4 # TauDecay               
+    elif truthIFF== 8: truthTypeMod=4 # BHadronDecay           
+    elif truthIFF== 9: truthTypeMod=4 # CHadronDecay           
+    elif truthIFF==10: truthTypeMod=2 # LightFlavorDecay       
+    else: print "WARNING: IFF truth label is out of range!!!"
 
     if debug or event_idx<10: print "mcChannel, truthTypeRaw, truthTypeMod=", mcChannel,truthTypeRaw, truthTypeMod
 
@@ -204,17 +240,32 @@ for event_idx in range(nEvents):# dset["mcChannelNumber"]:
     p_truth_4v.SetPtEtaPhiE(truthPt,truthEta,truthPhi,dset["p_truth_E"][event_idx])
     truthM     = p_truth_4v.M()
 
-    energy     = dset["p_e"][event_idx] / 1e3 #MeV to GeV
+    energy     = dset["p_e"][event_idx] #now in GeV
     pt_calo    = dset["p_et_calo"][event_idx]
     pt_track   = dset["p_pt_track"][event_idx]
     eta        = dset["p_eta"][event_idx]
     phi        = dset["p_phi"][event_idx]
+
+    if event_idx<100: 
+        print "truth_pt=", truthPt, ", energy= ", energy, ", pt_trk=", pt_track,", pt_calo= ",pt_calo,"iffTruth= ", truthIFF, ", type=",truthTypeRaw
 
     # This classification is a bit ramdom atm
     llh_tight=0 # for signal
     if dset["p_LHTight"][event_idx]==0: 
         llh_tight=2 #background
         if dset["p_LHValue"][event_idx]<-1: llh_tight=1 #for fakes
+        pass
+
+    llh_medium=0 # for signal
+    if dset["p_LHMedium"][event_idx]==0: 
+        llh_medium=2 #background
+        if dset["p_LHValue"][event_idx]<-1: llh_medium=1 #for fakes
+        pass
+
+    llh_loose=0 # for signal
+    if dset["p_LHLoose"][event_idx]==0: 
+        llh_loose=2 #background
+        if dset["p_LHValue"][event_idx]<-1: llh_loose=1 #for fakes
         pass
         
     el_4v = TLorentzVector()
@@ -258,6 +309,10 @@ for event_idx in range(nEvents):# dset["mcChannelNumber"]:
 
     image['mu'       ] = -1 #rec['averageintpercrossing']
     image['pantau'   ] = llh_tight #rec['off_decaymode']
+
+    image['llh_tight'  ] = llh_tight
+    image['llh_medium' ] = llh_medium
+    image['llh_loose'  ] = llh_loose
 
     image['truthmode'] = truthTypeMod #rec['true_decaymode']
     image['true_pt'  ] = truthPt #rec['true_pt']
