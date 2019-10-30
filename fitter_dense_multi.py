@@ -23,6 +23,10 @@ parser.add_argument(
 parser.add_argument(
     '--nClasses', default=3, type=int)#, action='store_true')
 parser.add_argument(
+    '--nEpochs', default=10, type=int)
+parser.add_argument(
+    '--patience', default=5, type=int)
+parser.add_argument(
     '--dev', default=False, action='store_true')
 
 args = parser.parse_args()
@@ -48,7 +52,7 @@ if args.nClasses==2:
         os.path.join(data_dir, "electron_images_type0.h5"),
         os.path.join(data_dir, "electron_images_type1.h5"),
         ]
-    labels = ['1p0n', '1pXn']
+    labels = ['sig', 'bkg']
     n_classes = 2
 elif args.nClasses==3:
     filenames = [
@@ -56,18 +60,18 @@ elif args.nClasses==3:
         os.path.join(data_dir, "electron_images_type1.h5"),
         os.path.join(data_dir, "electron_images_type2.h5"),
         ]
-    labels = ['1p0n', '1p1n', '1pXn']
+    labels = ['sig', 'bg0', 'bg1']
     n_classes = 3
 else: 
     do_3p=True
     filenames = [
-        os.path.join(data_dir, "images_new_1p0n.h5"),
-        os.path.join(data_dir, "images_new_1p1n.h5"),
-        os.path.join(data_dir, "images_new_1p2n.h5"),
-        os.path.join(data_dir, "images_new_3p0n.h5"),
-        os.path.join(data_dir, "images_new_3p1n.h5"),
+        os.path.join(data_dir, "electron_images_type0.h5"),
+        os.path.join(data_dir, "electron_images_type1.h5"),
+        os.path.join(data_dir, "electron_images_type2.h5"),
+        os.path.join(data_dir, "electron_images_type3.h5"),
+        os.path.join(data_dir, "electron_images_type4.h5"),
         ]
-    labels = ['1p0n', '1p1n', '1pXn', '3p0n', '3pXn']
+    labels = ['sig', 'bg0', 'bg1', 'bg2', 'bg3']
     n_classes = 5
 
 
@@ -77,7 +81,8 @@ train_ind, test_ind, val_ind = prepare_samples(filenames, labels)
 #features = kine_features + ['tracks', 's1', 's2', 's3', 's4', 's5']
 #reg_features = ['true_pt', 'true_eta', 'true_phi', 'true_m']
 
-features = ['tracks', 's1', 's2', 's3', 's4', 's5']
+#features = ['tracks', 's1', 's2', 's3', 's4', 's5']
+features = ['tracks', 's0','s1', 's2', 's3', 's4', 's5']
 
 test, val, y_test, y_val = load_test_data(
     filenames, test_ind, val_ind, debug=args.debug)
@@ -122,8 +127,10 @@ else:
         val, y_val_cat,
         reg_features=None,
         n_chunks=args.training_chunks,
-        use_multiprocessing=False,
-        workers=1,
+        epochs=args.nEpochs,
+        patience=args.patience,
+        use_multiprocessing=True,
+        workers=4,
         filename=model_filename,
         metrics=metrics,
         losses=losses,
