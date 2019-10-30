@@ -2,7 +2,7 @@ import math
 import numpy as np
 import itertools
 import socket
-import matplotlib as mpl;
+import matplotlib as mpl
 
 techlab_hosts = [
     'techlab-gpu-nvidiak20-03.cern.ch',
