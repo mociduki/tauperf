@@ -7,6 +7,8 @@ from keras.utils.np_utils import to_categorical
 from load import get_X_y
 from . import log; log = log.getChild(__name__)
 
+import matplotlib.pyplot as plt
+
 class TrainSequence(Sequence):
     """
     See https://keras.io/utils/
@@ -60,7 +62,9 @@ def fit_model_gen(
         train_indices,
         X_test, y_test, 
         reg_features=None,
-        n_chunks=3,
+        n_chunks=100,
+        epochs=10,
+        patience=5,
         use_multiprocessing=False,
         workers=1,
         filename='cache/test.h5',
@@ -120,7 +124,7 @@ def fit_model_gen(
                 ]
         else:
             callbacks = [
-                EarlyStopping(verbose=True, patience=10, monitor='val_loss'),
+                EarlyStopping(verbose=True, patience=patience, monitor='val_loss'),
                 ModelCheckpoint(filename, monitor='val_loss', verbose=True, save_best_only=True)
                 ]
 
@@ -129,14 +133,34 @@ def fit_model_gen(
             y_test if reg_features is None else X_test[reg_features[0]])#[X_test[feat] for feat in reg_features])
 
 
-        model.fit_generator(
+        logs= model.fit_generator(
             train_sequence,
             len(train_sequence),
-            epochs=10,
+            epochs=epochs,
             validation_data=validation_data,
             use_multiprocessing=use_multiprocessing,
             workers=workers,
             callbacks=callbacks)
+
+        #plot accuracy vs epoch
+        plt.plot(logs.history['categorical_accuracy'], label='train')
+        plt.plot(logs.history['val_categorical_accuracy'], label='valid')
+        plt.legend()
+        plt.title('')
+        plt.xlabel("Epoch")
+        plt.ylabel("Accuracy")
+        plt.savefig('./plots/imaging/acc_vs_epochs.png')
+        plt.clf()
+
+        #plot loss vs epoch
+        plt.plot(logs.history['loss'], label='train')
+        plt.plot(logs.history['val_loss'], label='valid')
+        plt.legend()
+        plt.xlabel("Epoch")
+        plt.ylabel("Loss")
+        plt.title('')
+        plt.savefig('./plots/imaging/loss_vs_epochs.png')
+        plt.clf()
 
 #         model.save(filename)
     
