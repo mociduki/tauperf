@@ -195,6 +195,25 @@ def dense_merged_model_topo(data, n_classes=3, final_activation='softmax'):
     tracks_out = Reshape((1, 128))(tracks_x)
     log.info('\t tracks final shape = {0}'.format(tracks_x._keras_shape))
 
+    log.info('* S0: build 2d convolutional model')
+    s0_input = Input(shape=data[0]['s0'].shape)
+    s0_shape = data[0]['s0'].shape
+    s0_x = Reshape((s0_shape[0], s0_shape[1], 1))(s0_input)
+    log.info('\t s0 input shape   = {0}'.format(s0_x._keras_shape))
+    s0_x = Conv2D(64, (2, 6), padding='same', activation='relu')(s0_x)
+    log.info('\t s0 convolu shape = {0}'.format(s0_x._keras_shape))
+    s0_x = MaxPooling2D((2, 2))(s0_x)
+#    s0_x = MaxPooling2D((1, 32))(s0_x)
+    log.info('\t s0 maxpool shape = {0}'.format(s0_x._keras_shape))
+    s0_x = Dropout(0.2)(s0_x)
+    s0_x = Flatten()(s0_x)
+    log.info('\t s0 flatten shape = {0}'.format(s0_x._keras_shape))
+    s0_x = Dense(128, activation='relu')(s0_x)
+    log.info('\t s0 dense shape   = {0}'.format(s0_x._keras_shape))
+    s0_x = Dropout(0.2)(s0_x)
+    s0_out = Reshape((1, 128))(s0_x)
+    log.info('\t s0 final shape   = {0}'.format(s0_out._keras_shape))
+
     log.info('* S1: build 2d convolutional model')
     s1_input = Input(shape=data[0]['s1'].shape)
     s1_shape = data[0]['s1'].shape
@@ -294,6 +313,7 @@ def dense_merged_model_topo(data, n_classes=3, final_activation='softmax'):
     log.info('merge layers')
     layers = [
         tracks_out,
+        s0_out,
         s1_out,
         s2_out,
         s3_out,
@@ -315,6 +335,7 @@ def dense_merged_model_topo(data, n_classes=3, final_activation='softmax'):
 
     model_input = [
         tracks_input,
+        s0_input,
         s1_input,
         s2_input,
         s3_input,
